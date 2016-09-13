@@ -4,6 +4,7 @@ import android.*;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -37,7 +38,8 @@ public class MapsActivity extends FragmentActivity
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private Marker marker;
-    private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
+    private boolean permissionGranted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +54,13 @@ public class MapsActivity extends FragmentActivity
     @Override
     protected void onResume() {
         super.onResume();
+        if(permissionGranted) {
+            if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
 
-        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
+                buildGoogleApiClient();
+                mGoogleApiClient.connect();
 
-            buildGoogleApiClient();
-            mGoogleApiClient.connect();
-
+            }
         }
     }
 
@@ -73,31 +76,20 @@ public class MapsActivity extends FragmentActivity
     public void setUpMap() {
 
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an expanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            else permissionGranted = true;
+            return;
         }
+        map.setMyLocationEnabled(true);
 
     }
 
@@ -108,13 +100,12 @@ public class MapsActivity extends FragmentActivity
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-                    map.setMyLocationEnabled(true);
+                    permissionGranted = true;
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
                 } else {
-
+                    permissionGranted = false;
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -129,8 +120,10 @@ public class MapsActivity extends FragmentActivity
     @Override
     protected void onPause() {
         super.onPause();
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        if(permissionGranted) {
+            if (mGoogleApiClient != null) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            }
         }
     }
 
@@ -162,10 +155,12 @@ public class MapsActivity extends FragmentActivity
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            else permissionGranted = true;
+            return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        Toast.makeText(this, "Location" , Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
