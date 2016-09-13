@@ -93,7 +93,8 @@ public class MapsActivity extends FragmentActivity
             else permissionGranted = true;
             return;
         }
-        map.setMyLocationEnabled(true);
+        //Change to true if circle and arrow should be present for accurate navigation
+        map.setMyLocationEnabled(false);
 
     }
 
@@ -188,6 +189,7 @@ public class MapsActivity extends FragmentActivity
 
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
+        Toast.makeText(MapsActivity.this, "Lat: " + dLatitude + " Long: " + dLongitude, Toast.LENGTH_SHORT).show();
         marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
                 .title("My Location").icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
