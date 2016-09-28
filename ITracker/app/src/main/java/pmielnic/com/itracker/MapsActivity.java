@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Permission;
@@ -29,10 +30,29 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MapsActivity extends FragmentActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
+    private class User {
+        private int birthYear;
+        private String fullName;
+        public User() {}
+        public User(String fullName, int birthYear) {
+            this.fullName = fullName;
+            this.birthYear = birthYear;
+        }
+        public long getBirthYear() {
+            return birthYear;
+        }
+        public String getFullName() {
+            return fullName;
+        }
+    }
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -46,6 +66,18 @@ public class MapsActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        Firebase.setAndroidContext(this);
+        Firebase ref = new Firebase("https://docs-examples.firebaseio.com/android/saving-data/fireblog");
+        Firebase usersRef = ref.child("users");
+        Map<String, String> alan = new HashMap<>();
+        alan.put("birthYear", "1920");
+        alan.put("fullName", "Alan Alal");
+        Map<String, Map<String, String>> users = new HashMap<>();
+        users.put("alalisaw", alan);
+        usersRef.setValue(users);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
