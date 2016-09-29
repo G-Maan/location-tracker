@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "680809743942",
+    "firebase_url": "https://locationtracker-dede1.firebaseio.com",
+    "project_id": "locationtracker-dede1",
+    "storage_bucket": "locationtracker-dede1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680809743942:android:324ebe86c9042552",
+        "android_client_info": {
+          "package_name": "pmielnic.com.itracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "680809743942-kbcpofc3p3s0og5jb4ishebgaa2fu1sp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA977JmJxkzLKUEEqPQkX88YjWVwpcLfZw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

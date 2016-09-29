@@ -68,7 +68,7 @@ public class MapsActivity extends FragmentActivity
         setContentView(R.layout.activity_maps);
 
         Firebase.setAndroidContext(this);
-        Firebase ref = new Firebase("https://docs-examples.firebaseio.com/android/saving-data/fireblog");
+        Firebase ref = new Firebase("https://locationtracker-dede1.firebaseio.com/");
         Firebase usersRef = ref.child("users");
         Map<String, String> alan = new HashMap<>();
         alan.put("birthYear", "1920");

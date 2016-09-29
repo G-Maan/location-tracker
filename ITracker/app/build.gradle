@@ -27,5 +27,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-ads:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
     compile 'com.google.android.gms:play-services-gcm:9.4.0'
+
     compile 'com.firebase:firebase-client-android:2.5.2+'
 }
+apply plugin: 'com.google.gms.google-services'
