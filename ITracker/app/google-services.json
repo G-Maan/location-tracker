@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "680809743942-kbcpofc3p3s0og5jb4ishebgaa2fu1sp.apps.googleusercontent.com",
+          "client_id": "680809743942-tuejvfbquc61bft7gtet9knbs9pk2pit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pmielnic.com.itracker",
+            "certificate_hash": "5B4AD42D1591B27EAAAB12E6E98088C28137D8A8"
+          }
+        },
+        {
+          "client_id": "680809743942-l3pkk3j2kfgmtfe5ab7l6c8vcmgqf6ck.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
