@@ -1,14 +1,15 @@
 package pmielnic.com.itracker;
 
 import android.Manifest;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.SearchManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -19,15 +20,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -37,8 +33,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -53,7 +47,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Calendar;
 import java.util.Locale;
+
+import pmielnic.com.itracker.receivers.PeriodicTaskReceiver;
 
 
 public class MapsActivity extends AppCompatActivity
@@ -61,40 +58,41 @@ public class MapsActivity extends AppCompatActivity
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
-//    private DrawerLayout mDrawerLayout;
-//    private ListView mDrawerList;
-//    private ActionBarDrawerToggle mDrawerToggle;
-//
-//    private CharSequence mDrawerTitle;
-//    private CharSequence mTitle;
-//    private String[] mPlanetTitles;
-
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
+    private String[] mDrawerListItems = { "Android", "iOS", "Windows", "OS X", "Linux" };
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private Marker marker;
+    private RequestQueue queue;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private boolean permissionGranted = false;
-
+    private String userName;
+    private String userEmail;
+    private PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        /* Retrieve a PendingIntent that will perform a broadcast */
+        Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
+        start();
+
         mDrawerList = (ListView)findViewById(R.id.navList);
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MapsActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                selectItem(position);
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
@@ -104,49 +102,14 @@ public class MapsActivity extends AppCompatActivity
         mActivityTitle = getTitle().toString();
         setupDrawer();
 
-//        mTitle = mDrawerTitle = getTitle();
-//        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-//
-//        // set a custom shadow that overlays the main content when the drawer opens
-//        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-//        // set up the drawer's list view with items and click listener
-//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-//                R.layout.drawer_list_item, mPlanetTitles));
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-//
-//        // enable ActionBar app icon to behave as action to toggle nav drawer
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
-//
-//        // ActionBarDrawerToggle ties together the the proper interactions
-//        // between the sliding drawer and the action bar app icon
-//        mDrawerToggle = new ActionBarDrawerToggle(
-//                this,                  /* host Activity */
-//                mDrawerLayout,         /* DrawerLayout object */
-//                  /* nav drawer image to replace 'Up' caret */
-//                R.string.drawer_open,  /* "open drawer" description for accessibility */
-//                R.string.drawer_close  /* "close drawer" description for accessibility */
-//        ) {
-//            public void onDrawerClosed(View view) {
-//                getSupportActionBar().setTitle(mTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//
-//            public void onDrawerOpened(View drawerView) {
-//                getSupportActionBar().setTitle(mDrawerTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//        };
-//        mDrawerLayout.setDrawerListener(mDrawerToggle);
-//
-//        if (savedInstanceState == null) {
-//            selectItem(0);
-//        }
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            userName = extras.getString("name");
+            userEmail = extras.getString("email");
+        }
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://localization-tracker.herokuapp.com/print/Pawel";
+        queue = Volley.newRequestQueue(this);
+        String url = "https://localization-tracker.herokuapp.com/print/"+userName;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {
@@ -170,9 +133,30 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    public void start() {
+        AlarmManager am=(AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(this, AlarmReceiver.class);
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
+        am.cancel(pendingIntent);
+        am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 5, pi); // Millisec * Second * Minute
+    }
+
+    private void selectItem(int position) {
+        // update selected item and title, then close the drawer
+        mDrawerList.setItemChecked(position, true);
+        Intent intent = new Intent(this, SignInActivity.class);
+        mDrawerLayout.closeDrawer(mDrawerList);
+        finish();
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
     private void addDrawerItems() {
-        String[] osArray = { "Android", "iOS", "Windows", "OS X", "Linux" };
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, osArray);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mDrawerListItems);
         mDrawerList.setAdapter(mAdapter);
     }
 
@@ -183,7 +167,7 @@ public class MapsActivity extends AppCompatActivity
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigation!");
+                getSupportActionBar().setTitle("Navigate to:");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
@@ -298,7 +282,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     protected synchronized void buildGoogleApiClient() {
-        Toast.makeText(this, "buildGoogleApiClient", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "buildGoogleApiClient", Toast.LENGTH_SHORT).show();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -308,7 +292,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        Toast.makeText(this, "onConnected", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "onConnected", Toast.LENGTH_SHORT).show();
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
@@ -365,103 +349,5 @@ public class MapsActivity extends AppCompatActivity
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 20));
 
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    /* Called whenever we call invalidateOptionsMenu() */
-//    @Override
-//    public boolean onPrepareOptionsMenu(Menu menu) {
-//        // If the nav drawer is open, hide action items related to the content view
-//        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-//        return super.onPrepareOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // The action bar home/up action should open or close the drawer.
-//        // ActionBarDrawerToggle will take care of this.
-//        if (mDrawerToggle.onOptionsItemSelected(item)) {
-//            return true;
-//        }
-//        // Handle action buttons
-//        switch(item.getItemId()) {
-//            case R.id.action_websearch:
-//                // create intent to perform web search for this planet
-//                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-//                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-//                // catch event that there's no activity to handle intent
-//                if (intent.resolveActivity(getPackageManager()) != null) {
-//                    startActivity(intent);
-//                } else {
-//                    Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-//                }
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
-//
-//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-//
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            selectItem(position);
-//        }
-//    }/** Swaps fragments in the main content view */
-//    private void selectItem(int position) {
-//        // Create a new fragment and specify the planet to show based on position
-//        Fragment fragment = new PlanetFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-//        fragment.setArguments(args);
-//
-//        // Insert the fragment by replacing any existing fragment
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.content_frame, fragment)
-//                .commit();
-//
-//        // Highlight the selected item, update the title, and close the drawer
-//        mDrawerList.setItemChecked(position, true);
-//        setTitle(mPlanetTitles[position]);
-//        mDrawerLayout.closeDrawer(mDrawerList);
-//    }
-//
-//    @Override
-//    public void setTitle(CharSequence title) {
-//        mTitle = title;
-//        getSupportActionBar().setTitle(mTitle);
-//    }
-//
-//    /**
-//     * Fragment that appears in the "content_frame", shows a planet
-//     */
-//    public static class PlanetFragment extends Fragment {
-//        public static final String ARG_PLANET_NUMBER = "planet_number";
-//
-//        public PlanetFragment() {
-//            // Empty constructor required for fragment subclasses
-//        }
-//
-////        @Override
-////        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-////                                 Bundle savedInstanceState) {
-////            View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-////            int i = getArguments().getInt(ARG_PLANET_NUMBER);
-////            String planet = getResources().getStringArray(R.array.planets_array)[i];
-////
-////            int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
-////                    "drawable", getActivity().getPackageName());
-////            ((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-////            getActivity().setTitle(planet);
-////            return rootView;
-////        }
-//    }
 
 }
