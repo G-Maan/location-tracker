@@ -9,17 +9,14 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,6 +28,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -47,10 +45,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Calendar;
-import java.util.Locale;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import pmielnic.com.itracker.receivers.PeriodicTaskReceiver;
+import java.util.ArrayList;
+import java.util.List;
+
+import pmielnic.com.itracker.model.User;
 
 
 public class MapsActivity extends AppCompatActivity
@@ -82,10 +84,10 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        /* Retrieve a PendingIntent that will perform a broadcast */
-        Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
-        start();
+//        /* Retrieve a PendingIntent that will perform a broadcast */
+//        Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
+//        pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
+//        start();
 
         mDrawerList = (ListView)findViewById(R.id.navList);
         addDrawerItems();
@@ -144,10 +146,19 @@ public class MapsActivity extends AppCompatActivity
     private void selectItem(int position) {
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent;
+        switch(position){
+            case 0:
+                intent = new Intent(this, SearchActivity.class);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                startActivity(intent);
+                break;
+            default:
+        intent = new Intent(this, SignInActivity.class);
         mDrawerLayout.closeDrawer(mDrawerList);
         finish();
         startActivity(intent);
+        }
     }
 
     @Override
