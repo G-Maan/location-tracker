@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -139,16 +138,13 @@ public class SignInActivity extends AppCompatActivity implements
             userEmail = acct.getEmail();
             userName = acct.getDisplayName().replaceAll("\\s+","");
             String url = "https://localization-tracker.herokuapp.com/save/"+userName+"/"+userEmail;
-            Toast.makeText(SignInActivity.this, url, Toast.LENGTH_SHORT).show();
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String response) {
-                    Toast.makeText(SignInActivity.this, response, Toast.LENGTH_SHORT).show();
                 }
             }, new Response.ErrorListener(){
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(SignInActivity.this, "No response", Toast.LENGTH_SHORT).show();
                 }
             });
             queue.add(stringRequest);

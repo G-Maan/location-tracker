@@ -139,7 +139,6 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 listAdapter.notifyDataSetChanged();
                 for (User user : userList) {
-                    Toast.makeText(SearchActivity.this, user.toString(), Toast.LENGTH_SHORT).show();
                     Log.d("USER", user.toString());
                 }
             }
@@ -147,8 +146,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 hideProgressDialog();
-                Toast.makeText(SearchActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("Error", error.getMessage());
+                    Log.d("Error", error.getMessage());
             }
         });
         queue.add(request);

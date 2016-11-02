@@ -30,6 +30,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -87,10 +88,17 @@ public class MapsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-//        /* Retrieve a PendingIntent that will perform a broadcast */
-//        Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
-//        pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
-//        start();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            userName = extras.getString("name");
+            userEmail = extras.getString("email");
+        }
+
+        /* Retrieve a PendingIntent that will perform a broadcast */
+        Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
+        alarmIntent.putExtra("email", userEmail);
+        pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
+        start();
 
         mDrawerList = (ListView)findViewById(R.id.navList);
         addDrawerItems();
@@ -107,23 +115,17 @@ public class MapsActivity extends AppCompatActivity
         mActivityTitle = getTitle().toString();
         setupDrawer();
 
-        Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            userName = extras.getString("name");
-            userEmail = extras.getString("email");
-        }
+
 
         queue = Volley.newRequestQueue(this);
         String url = "https://localization-tracker.herokuapp.com/print/"+userName;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {
-                Toast.makeText(MapsActivity.this, response, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MapsActivity.this, "No response", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -141,7 +143,8 @@ public class MapsActivity extends AppCompatActivity
     public void start() {
         AlarmManager am=(AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, AlarmReceiver.class);
-        final PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
+        i.putExtra("email",userEmail);
+        final PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         am.cancel(pendingIntent);
         am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 5, pi); // Millisec * Second * Minute
     }
@@ -296,7 +299,6 @@ public class MapsActivity extends AppCompatActivity
     }
 
     protected synchronized void buildGoogleApiClient() {
-//        Toast.makeText(this, "buildGoogleApiClient", Toast.LENGTH_SHORT).show();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -306,11 +308,10 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-//        Toast.makeText(this, "onConnected", Toast.LENGTH_SHORT).show();
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setInterval(1000 * 10);
+        mLocationRequest.setFastestInterval(1000 * 10);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         //mLocationRequest.setSmallestDisplacement(0.1F);
