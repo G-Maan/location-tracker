@@ -185,6 +185,9 @@ public class SignInActivity extends AppCompatActivity implements
     private void openMaps() {
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra("name", userName);
+        if(userEmail.endsWith(".com")){
+            userEmail = userEmail.substring(0, userEmail.length()-4);
+        }
         intent.putExtra("email", userEmail);
         finish();
         startActivity(intent);
