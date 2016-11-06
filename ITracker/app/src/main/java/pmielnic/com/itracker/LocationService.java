@@ -34,7 +34,10 @@ import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -187,6 +190,7 @@ public class LocationService extends Service implements LocationListener, Google
         Log.d("onLocationChanged", "Called onLocationChanged()");
         mLastLocation = location;
 
+        String currentDateAndTime = new SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(new Date());
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
         String url = "https://localization-tracker.herokuapp.com/save/location";
@@ -194,6 +198,7 @@ public class LocationService extends Service implements LocationListener, Google
         params.put("email", userEmail);
         params.put("latitude", String.valueOf(dLatitude));
         params.put("longitude", String.valueOf(dLongitude));
+        params.put("date", currentDateAndTime);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         Log.d("Network info", "isAvailable() " + networkInfo.isAvailable() + " isConnected() " + networkInfo.isConnected());
         if(networkInfo == null || !networkInfo.isAvailable() || !networkInfo.isConnected()) {

@@ -50,7 +50,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import java.util.ArrayList;
@@ -156,6 +160,13 @@ public class MapsActivity extends AppCompatActivity
         switch(position){
             case 0:
                 intent = new Intent(this, SearchActivity.class);
+                intent.putExtra("email", userEmail);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, MainActivity.class);
+                intent.putExtra("email", userEmail);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
@@ -364,10 +375,12 @@ public class MapsActivity extends AppCompatActivity
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 20));
 
         String url = "https://localization-tracker.herokuapp.com/save/location";
+        String currentDateAndTime = new SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(new Date());
         Map<String, String> params = new HashMap<>();
         params.put("email", userEmail);
         params.put("latitude", String.valueOf(dLatitude));
         params.put("longitude", String.valueOf(dLongitude));
+        params.put("date", currentDateAndTime);
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override

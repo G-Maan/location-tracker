@@ -40,11 +40,17 @@ public class SearchActivity extends AppCompatActivity {
     private SearchView searchView;
     private String url = "https://localization-tracker.herokuapp.com/find/";
     private String baseUrl = "https://localization-tracker.herokuapp.com/findAll";
+    private String userEmail;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
+
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null){
+            userEmail = bundle.getString("email");
+        }
 
         progressDialog = new ProgressDialog(this);
         listView = (ListView) findViewById(R.id.list);
@@ -116,7 +122,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void searchFor(String text){
 
-        url += text;
+        url += userEmail + "/" + text;
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
