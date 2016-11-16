@@ -5,6 +5,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -34,9 +36,11 @@ import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -53,6 +57,7 @@ public class LocationService extends Service implements LocationListener, Google
     private LoggerLoadTask mTask;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private Geocoder geocoder;
 
 //    @Override
 //    public void onCreate() {
@@ -96,6 +101,9 @@ public class LocationService extends Service implements LocationListener, Google
         connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         executeLogger();
+
+
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -190,7 +198,7 @@ public class LocationService extends Service implements LocationListener, Google
         Log.d("onLocationChanged", "Called onLocationChanged()");
         mLastLocation = location;
 
-        String currentDateAndTime = new SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(new Date());
+        String currentDateAndTime = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(new Date());
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
         String url = "https://localization-tracker.herokuapp.com/save/location";
@@ -199,6 +207,18 @@ public class LocationService extends Service implements LocationListener, Google
         params.put("latitude", String.valueOf(dLatitude));
         params.put("longitude", String.valueOf(dLongitude));
         params.put("date", currentDateAndTime);
+        geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addressList = geocoder.getFromLocation(dLatitude, dLongitude, 1);
+            String country = addressList.get(0).getCountryName();
+            String city = addressList.get(0).getLocality();
+            String street = addressList.get(0).getAddressLine(0);
+            params.put("country", country);
+            params.put("city", city);
+            params.put("street", street);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         Log.d("Network info", "isAvailable() " + networkInfo.isAvailable() + " isConnected() " + networkInfo.isConnected());
         if(networkInfo == null || !networkInfo.isAvailable() || !networkInfo.isConnected()) {

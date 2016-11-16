@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -29,7 +31,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -47,10 +48,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,6 +77,8 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
+    private Geocoder geocoder;
+
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private Marker marker;
@@ -374,13 +376,27 @@ public class MapsActivity extends AppCompatActivity
                         .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 20));
 
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+
         String url = "https://localization-tracker.herokuapp.com/save/location";
-        String currentDateAndTime = new SimpleDateFormat("MM/dd HH:mm", Locale.getDefault()).format(new Date());
+        String currentDateAndTime = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(new Date());
         Map<String, String> params = new HashMap<>();
         params.put("email", userEmail);
         params.put("latitude", String.valueOf(dLatitude));
         params.put("longitude", String.valueOf(dLongitude));
         params.put("date", currentDateAndTime);
+        try {
+            List<Address> addressList = geocoder.getFromLocation(dLatitude, dLongitude, 1);
+            String country = addressList.get(0).getCountryName();
+            String city = addressList.get(0).getLocality();
+            String street = addressList.get(0).getAddressLine(0);
+            params.put("country", country);
+            params.put("city", city);
+            params.put("street", street);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override

@@ -16,7 +16,7 @@ import java.util.List;
  * Simple example of ListAdapter for using with Folding Cell
  * Adapter holds indexes of unfolded elements for correct work with default reusable views behavior
  */
-public class FoldingCellListAdapter extends ArrayAdapter<Item> {
+public class FoldingCellListAdapter extends ArrayAdapter<Item>{
 
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
     private View.OnClickListener defaultRequestBtnClickListener;
@@ -24,6 +24,7 @@ public class FoldingCellListAdapter extends ArrayAdapter<Item> {
 
     public FoldingCellListAdapter(Context context, List<Item> objects) {
         super(context, 0, objects);
+
     }
 
     @Override

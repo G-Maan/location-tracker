@@ -121,7 +121,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchFor(String text){
-
+        System.out.println(userEmail);
         url += userEmail + "/" + text;
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
