@@ -25,6 +25,8 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import pmielnic.com.itracker.globals.Globals;
+
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
  * profile.
@@ -42,11 +44,13 @@ public class SignInActivity extends AppCompatActivity implements
     private ProgressDialog mProgressDialog;
     private String userEmail;
     private String userName;
+    Globals globals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_activity);
+        globals = ((Globals)getApplication());
 
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -137,7 +141,8 @@ public class SignInActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             userEmail = acct.getEmail();
             userName = acct.getDisplayName().replaceAll("\\s+","");
-            String url = "https://localization-tracker.herokuapp.com/save/"+userName+"/"+userEmail;
+
+            String url = globals.getUrlSaveUser() + userName + "/" + userEmail;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
                 @Override
                 public void onResponse(String response) {

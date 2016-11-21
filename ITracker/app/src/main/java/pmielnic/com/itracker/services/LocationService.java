@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.services;
 
 import android.app.AlarmManager;
 import android.app.Service;
@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import pmielnic.com.itracker.globals.Globals;
+
 /**
  * Created by Pawel on 2016-11-02.
  */
@@ -59,18 +61,6 @@ public class LocationService extends Service implements LocationListener, Google
     private LocationRequest mLocationRequest;
     private Geocoder geocoder;
 
-//    @Override
-//    public void onCreate() {
-//        Log.d("onCreate", "Called onCreate()");
-//        initializeLocationManager();
-//    }
-//
-//    private void initializeLocationManager() {
-//        Log.e("location", "initializeLocationManager");
-//        if (locationManager == null) {
-//            locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-//        }
-//    }
 
     @Override
     public void onCreate() {
@@ -201,7 +191,7 @@ public class LocationService extends Service implements LocationListener, Google
         String currentDateAndTime = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(new Date());
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
-        String url = "https://localization-tracker.herokuapp.com/save/location";
+        Globals globals = new Globals();
         Map<String, String> params = new HashMap<>();
         params.put("email", userEmail);
         params.put("latitude", String.valueOf(dLatitude));
@@ -225,7 +215,7 @@ public class LocationService extends Service implements LocationListener, Google
             this.stopSelf();
         }else {
             queue = Volley.newRequestQueue(this);
-            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
+            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, globals.getUrlSaveLocation(), new JSONObject(params), new Response.Listener<JSONObject>() {
 
                 @Override
                 public void onResponse(JSONObject response) {

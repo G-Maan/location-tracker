@@ -40,4 +40,15 @@
     <string name="content_to1_mock">46th Ave</string>
     <string name="content_to2_mock">Woodside, NY 11101</string>
     <string name="title_activity_main2">Main2Activity</string>
+
+    <!--Urls used to communicate with server-->
+    <string name="url_base">https://localization-tracker.herokuapp.com/</string>
+    <string name="url_save_location">save/location/</string>
+    <string name="url_save_user">save/</string>
+    <string name="url_print_user">print/</string>
+    <string name="url_find_user">find/</string>
+    <string name="url_add_friend">add/</string>
+    <string name="url_remove_friend">remove/</string>
+    <string name="url_list_friends">list/friends/</string>
+
 </resources>

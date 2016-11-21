@@ -19,11 +19,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import pmielnic.com.itracker.adapters.FoldingCellListAdapter;
+import pmielnic.com.itracker.globals.Globals;
+import pmielnic.com.itracker.model.Item;
 import pmielnic.com.itracker.model.User;
 
 /**
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String userEmail;
     private RequestQueue queue;
-    private String url = "https://localization-tracker.herokuapp.com/list/friends/";
     private List<User> userList = new ArrayList<>();
 
     @Override
@@ -91,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void listFriends(){
 
-        url += userEmail;
+        Globals globals = new Globals();
+        String url = globals.getUrlListFriends() + userEmail;
+
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -125,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         queue.add(request);
-        url = "https://localization-tracker.herokuapp.com/list/friends/";
     }
 
 }

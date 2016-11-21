@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,9 @@ import com.ramotion.foldingcell.FoldingCell;
 
 import java.util.HashSet;
 import java.util.List;
+
+import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.model.Item;
 
 /**
  * Simple example of ListAdapter for using with Folding Cell

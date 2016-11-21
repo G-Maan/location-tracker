@@ -57,10 +57,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import pmielnic.com.itracker.model.User;
+import pmielnic.com.itracker.globals.Globals;
+import pmielnic.com.itracker.receivers.AlarmReceiver;
 
 
 public class MapsActivity extends AppCompatActivity
@@ -73,7 +73,7 @@ public class MapsActivity extends AppCompatActivity
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-    private String[] mDrawerListItems = { "Android", "iOS", "Windows", "OS X", "Linux" };
+    private String[] mDrawerListItems = { "Find users", "Friend list"};
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -88,6 +88,9 @@ public class MapsActivity extends AppCompatActivity
     private String userName;
     private String userEmail;
     private PendingIntent pendingIntent;
+
+    private Globals globals = new Globals();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +127,7 @@ public class MapsActivity extends AppCompatActivity
 
 
         queue = Volley.newRequestQueue(this);
-        String url = "https://localization-tracker.herokuapp.com/print/"+userName;
+        String url = globals.getUrlPrint() + userName;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
             @Override
             public void onResponse(String response) {
@@ -379,7 +382,6 @@ public class MapsActivity extends AppCompatActivity
         geocoder = new Geocoder(this, Locale.getDefault());
 
 
-        String url = "https://localization-tracker.herokuapp.com/save/location";
         String currentDateAndTime = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(new Date());
         Map<String, String> params = new HashMap<>();
         params.put("email", userEmail);
@@ -397,7 +399,7 @@ public class MapsActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, url, new JSONObject(params), new Response.Listener<JSONObject>() {
+        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, globals.getUrlSaveLocation(), new JSONObject(params), new Response.Listener<JSONObject>() {
 
             @Override
             public void onResponse(JSONObject response) {
