@@ -14,12 +14,10 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -44,6 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.globals.Globals;
 
 /**
@@ -60,11 +59,13 @@ public class LocationService extends Service implements LocationListener, Google
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Geocoder geocoder;
+    private String urlSaveLocation;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
+        urlSaveLocation = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_save_location);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API).
@@ -77,7 +78,6 @@ public class LocationService extends Service implements LocationListener, Google
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("onStartCommand", "Called onStartCommand()");
-        Toast.makeText(getApplicationContext(), "Called onStartCommand()", Toast.LENGTH_SHORT).show();
         mGoogleApiClient.connect();
 
         if(intent != null) {
@@ -86,7 +86,6 @@ public class LocationService extends Service implements LocationListener, Google
                 userEmail = extras.getString("email");
             }
         }
-        Toast.makeText(getApplicationContext(), "Passed email to LocationService: " + userEmail, Toast.LENGTH_SHORT).show();
 
         connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -143,7 +142,6 @@ public class LocationService extends Service implements LocationListener, Google
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Location services stopped", Toast.LENGTH_LONG).show();
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -191,7 +189,7 @@ public class LocationService extends Service implements LocationListener, Google
         String currentDateAndTime = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault()).format(new Date());
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
-        Globals globals = new Globals();
+
         Map<String, String> params = new HashMap<>();
         params.put("email", userEmail);
         params.put("latitude", String.valueOf(dLatitude));
@@ -215,7 +213,7 @@ public class LocationService extends Service implements LocationListener, Google
             this.stopSelf();
         }else {
             queue = Volley.newRequestQueue(this);
-            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, globals.getUrlSaveLocation(), new JSONObject(params), new Response.Listener<JSONObject>() {
+            JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, urlSaveLocation, new JSONObject(params), new Response.Listener<JSONObject>() {
 
                 @Override
                 public void onResponse(JSONObject response) {

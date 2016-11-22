@@ -25,6 +25,7 @@ import java.util.List;
 import pmielnic.com.itracker.adapters.FoldingCellListAdapter;
 import pmielnic.com.itracker.globals.Globals;
 import pmielnic.com.itracker.model.Item;
+import pmielnic.com.itracker.model.Location;
 import pmielnic.com.itracker.model.User;
 
 /**
@@ -35,11 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private String userEmail;
     private RequestQueue queue;
     private List<User> userList = new ArrayList<>();
+    Globals globals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        globals = ((Globals)getApplicationContext());
 
         queue = Volley.newRequestQueue(this);
 
@@ -91,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void listFriends(){
 
-        Globals globals = new Globals();
+
         String url = globals.getUrlListFriends() + userEmail;
 
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
@@ -101,12 +105,9 @@ public class MainActivity extends AppCompatActivity {
                 for(int i = 0; i < response.length(); i++) {
                     try{
                         JSONObject obj = response.getJSONObject(i);
-                        User user = new User();
-                        user.setId(obj.getLong("id"));
-                        user.setName(obj.getString("name"));
-                        user.setEmail(obj.getString("email"));
-                        user.setLatitude(obj.getDouble("latitude"));
-                        user.setLongitude(obj.getDouble("longitude"));
+
+                        User user = Utils.parseJsonToUser(obj);
+
                         userList.add(user);
                     } catch (JSONException e) {
                         e.printStackTrace();

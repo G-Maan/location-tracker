@@ -9,17 +9,40 @@ import pmielnic.com.itracker.R;
  */
 public class Globals extends Application {
 
-    private String urlPrint = this.getResources().getString(R.string.url_base) + this.getResources().getString(R.string.url_print_user);
-    private String urlSaveLocation = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_save_location);
-    private String urlFindUser = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_find_user);
-    private String urlAddUser = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_add_friend);
-    private String urlRemoveUser = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_remove_friend);
-    private String urlListFriends = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_list_friends);
-    private String urlSaveUser = getResources().getString(R.string.url_base) + getResources().getString(R.string.url_save_user);
+    private String urlPrint;
+    private String urlSaveLocation;
+    private String urlFindUser;
+    private String urlAddUser;
+    private String urlRemoveUser;
+    private String urlListFriends;
+    private String urlSaveUser;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    public void setUrlPrint(String urlPrint) {
+        this.urlPrint = urlPrint;
+    }
+
+    public void setUrlSaveLocation(String urlSaveLocation) {
+        this.urlSaveLocation = urlSaveLocation;
+    }
+
+    public void setUrlFindUser(String urlFindUser) {
+        this.urlFindUser = urlFindUser;
+    }
+
+    public void setUrlAddUser(String urlAddUser) {
+        this.urlAddUser = urlAddUser;
+    }
+
+    public void setUrlRemoveUser(String urlRemoveUser) {
+        this.urlRemoveUser = urlRemoveUser;
+    }
+
+    public void setUrlListFriends(String urlListFriends) {
+        this.urlListFriends = urlListFriends;
+    }
+
+    public void setUrlSaveUser(String urlSaveUser) {
+        this.urlSaveUser = urlSaveUser;
     }
 
     public String getUrlFindUser() {

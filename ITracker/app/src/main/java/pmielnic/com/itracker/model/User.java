@@ -5,11 +5,10 @@ package pmielnic.com.itracker.model;
  */
 public class User {
 
-    Long id;
-    String name;
-    String email;
-    double latitude;
-    double longitude;
+    private Long id;
+    private String name;
+    private String email;
+    private Location location;
 
     public Long getId() {
         return id;
@@ -35,30 +34,20 @@ public class User {
         this.email = email;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
+                ", location=" + location +
                 '}';
     }
 }

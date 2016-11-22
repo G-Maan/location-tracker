@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -28,6 +29,8 @@ import java.util.List;
 
 import pmielnic.com.itracker.adapters.DatabaseListAdapter;
 import pmielnic.com.itracker.globals.Globals;
+import pmielnic.com.itracker.model.Address;
+import pmielnic.com.itracker.model.Location;
 import pmielnic.com.itracker.model.User;
 
 /**
@@ -42,11 +45,15 @@ public class SearchActivity extends AppCompatActivity {
     private RequestQueue queue;
     private SearchView searchView;
     private String userEmail;
+    Globals globals;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_activity);
+
+        globals = ((Globals)getApplicationContext());
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null){
@@ -55,8 +62,16 @@ public class SearchActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
         listView = (ListView) findViewById(R.id.list);
+        TextView empty = (TextView) findViewById(R.id.empty);
+        listView.setEmptyView(empty);
         listAdapter = new DatabaseListAdapter(this, userList);
         searchView = (SearchView) findViewById(R.id.search);
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setIconified(false);
+            }
+        });
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
@@ -89,9 +104,10 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+
+
     private void searchFor(String text){
         System.out.println(userEmail);
-        Globals globals = new Globals();
         String url = globals.getUrlFindUser() + userEmail + "/" + text;
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
@@ -102,12 +118,9 @@ public class SearchActivity extends AppCompatActivity {
                 for(int i = 0; i < response.length(); i++) {
                     try{
                         JSONObject obj = response.getJSONObject(i);
-                        User user = new User();
-                        user.setId(obj.getLong("id"));
-                        user.setName(obj.getString("name"));
-                        user.setEmail(obj.getString("email"));
-                        user.setLatitude(obj.getDouble("latitude"));
-                        user.setLongitude(obj.getDouble("longitude"));
+
+                        User user = Utils.parseJsonToUser(obj);
+
                         userList.add(user);
                     } catch (JSONException e) {
                         e.printStackTrace();

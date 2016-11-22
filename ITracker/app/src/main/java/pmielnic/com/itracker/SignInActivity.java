@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -50,8 +51,8 @@ public class SignInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_in_activity);
-        globals = ((Globals)getApplication());
-
+        globals = ((Globals)getApplicationContext());
+        initializeGlobals();
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
 
@@ -92,6 +93,16 @@ public class SignInActivity extends AppCompatActivity implements
 
         queue = Volley.newRequestQueue(this);
 
+    }
+
+    private void initializeGlobals(){
+        globals.setUrlPrint(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_print_user));
+        globals.setUrlSaveLocation(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_save_location));
+        globals.setUrlFindUser(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_find_user));
+        globals.setUrlAddUser(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_add_friend));
+        globals.setUrlRemoveUser(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_remove_friend));
+        globals.setUrlListFriends(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_list_friends));
+        globals.setUrlSaveUser(getResources().getString(R.string.url_base) + getResources().getString(R.string.url_save_user));
     }
 
     @Override

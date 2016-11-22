@@ -32,6 +32,14 @@ public class DatabaseListAdapter extends BaseAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        if(userList.isEmpty()){
+
+        }
+    }
+
+    @Override
     public int getCount() {
         return userList.size();
     }
@@ -56,8 +64,9 @@ public class DatabaseListAdapter extends BaseAdapter {
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         TextView email = (TextView) convertView.findViewById(R.id.email);
+        ImageButton imageButton = (ImageButton) convertView.findViewById(R.id.add_button);
         View row = inflater.inflate(R.layout.list_row, parent, false);
-        ImageButton imageButton = (ImageButton) row.findViewById(R.id.add_button);
+//        ImageButton imageButton = (ImageButton) row.findViewById(R.id.add_button);
 
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override

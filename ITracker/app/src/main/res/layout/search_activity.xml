@@ -11,9 +11,19 @@
 
     <ListView
         android:id="@+id/list"
+        android:focusable="true"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:dividerHeight="1dp"
         android:layout_below="@+id/search" />
+
+    <TextView
+        android:id="@+id/empty"
+        android:text="No users found"
+        android:textSize="20dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        />
 
 </RelativeLayout>

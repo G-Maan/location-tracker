@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
     android:padding="8dp" >
 
     <ImageButton
@@ -12,6 +13,7 @@
         android:src="@drawable/ic_add_black_24dp"
         android:layout_marginRight="8dp"
         android:layout_centerVertical="true"
+        android:onClick="onClickImageButton"
         android:layout_alignParentEnd="true" />
 
     <!-- User name -->
