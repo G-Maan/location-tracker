@@ -55,7 +55,6 @@ public class LocationService extends Service implements LocationListener, Google
     private RequestQueue queue;
     private String userEmail;
     private ConnectivityManager connectivityManager;
-    private LoggerLoadTask mTask;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private Geocoder geocoder;
@@ -89,7 +88,6 @@ public class LocationService extends Service implements LocationListener, Google
 
         connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
-        executeLogger();
 
 
 
@@ -102,13 +100,7 @@ public class LocationService extends Service implements LocationListener, Google
         return null;
     }
 
-    private void executeLogger() {
-        if (mTask != null
-                && mTask.getStatus() != LoggerLoadTask.Status.FINISHED) {
-            return;
-        }
-        mTask = (LoggerLoadTask) new LoggerLoadTask().execute();
-    }
+
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -159,27 +151,6 @@ public class LocationService extends Service implements LocationListener, Google
         super.onDestroy();
     }
 
-    private class LoggerLoadTask extends AsyncTask<Void, Void, Void> {
-
-        // TODO: create two base service urls, one for debugging and one for live.
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            try {
-                // if we have no data connection, no point in proceeding.
-                NetworkInfo ni = connectivityManager.getActiveNetworkInfo();
-                if (ni == null || !ni.isAvailable() || !ni.isConnected()) {
-                    return null;
-                }else{
-
-                }
-                // / grab and log data
-                Log.i("info", "doinBackground worked!");
-            } catch (Exception e) {
-                        Log.e("Exception", e.toString());
-            }
-            return null;
-        }
-    }
 
     @Override
     public void onLocationChanged(Location location) {

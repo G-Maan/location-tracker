@@ -104,8 +104,6 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-
-
     private void searchFor(String text){
         System.out.println(userEmail);
         String url = globals.getUrlFindUser() + userEmail + "/" + text;

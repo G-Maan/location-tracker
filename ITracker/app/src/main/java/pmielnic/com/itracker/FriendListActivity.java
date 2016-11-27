@@ -31,12 +31,13 @@ import pmielnic.com.itracker.model.User;
 /**
  * Example of using Folding Cell with ListView and ListAdapter
  */
-public class MainActivity extends AppCompatActivity {
+public class FriendListActivity extends AppCompatActivity {
 
     private String userEmail;
     private RequestQueue queue;
     private List<User> userList = new ArrayList<>();
     Globals globals;
+    FoldingCellListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +57,18 @@ public class MainActivity extends AppCompatActivity {
         ListView theListView = (ListView) findViewById(R.id.mainListView);
 
         // prepare elements to display
-        final ArrayList<Item> items = Item.getTestingList();
+//        final ArrayList<Item> items = Item.getTestingList();
 
         // add custom btn handler to first list item
-        items.get(0).setRequestBtnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "CUSTOM HANDLER FOR FIRST BUTTON", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        items.get(0).setRequestBtnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getApplicationContext(), "CUSTOM HANDLER FOR FIRST BUTTON", Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         // create custom adapter that holds elements and their state (we need hold a id's of unfolded elements for reusable elements)
-        final FoldingCellListAdapter adapter = new FoldingCellListAdapter(this, items);
+        adapter = new FoldingCellListAdapter(this, userList);
 
         // add default btn handler for each request btn on each item if custom handler not found
         adapter.setDefaultRequestBtnClickListener(new View.OnClickListener() {
@@ -94,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listFriends(){
-
-
         String url = globals.getUrlListFriends() + userEmail;
 
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
@@ -114,12 +113,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 for (User u: userList){
-                    Toast.makeText(getApplicationContext(), u.toString(), Toast.LENGTH_SHORT).show();
+                    Log.d("USER", u.toString());
                 }
-//                listAdapter.notifyDataSetChanged();
-                for (User user : userList) {
-                    Log.d("USER", user.toString());
-                }
+                adapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override

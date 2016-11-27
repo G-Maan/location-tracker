@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -43,15 +46,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -60,6 +67,7 @@ import java.util.Map;
 import java.util.List;
 
 import pmielnic.com.itracker.globals.Globals;
+import pmielnic.com.itracker.model.User;
 import pmielnic.com.itracker.receivers.AlarmReceiver;
 
 
@@ -74,6 +82,7 @@ public class MapsActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
     private String[] mDrawerListItems = { "Find users", "Friend list"};
+    private List<Marker> markers;
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -127,7 +136,6 @@ public class MapsActivity extends AppCompatActivity
         setupDrawer();
 
 
-
         queue = Volley.newRequestQueue(this);
         String url = globals.getUrlPrint() + userName;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
@@ -157,7 +165,7 @@ public class MapsActivity extends AppCompatActivity
         i.putExtra("email",userEmail);
         final PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         am.cancel(pendingIntent);
-        am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 5, pi); // Millisec * Second * Minute
+        am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 60 * 10, pi); // Millisec * Second * Minute
     }
 
     private void selectItem(int position) {
@@ -172,7 +180,7 @@ public class MapsActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case 1:
-                intent = new Intent(this, MainActivity.class);
+                intent = new Intent(this, FriendListActivity.class);
                 intent.putExtra("email", userEmail);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
@@ -237,7 +245,54 @@ public class MapsActivity extends AppCompatActivity
             }else{
                 requestLocationUpdates();
             }
+            getMarkerInfo();
         }
+    }
+
+    private void setupMarkers(List<User> users){
+        if (markers != null){
+            for (Marker m: markers){
+                m.remove();
+            }
+        }
+        for(User u: users){
+            Log.d("LATLNG", u.getName());
+            LatLng latLng = new LatLng(u.getLocation().getLatitude(), u.getLocation().getLongitude());
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng).title(u.getName()).snippet(u.getLocation().getAddress().getStreetName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            map.addMarker(markerOptions);
+        }
+    }
+
+    private List<User> getMarkerInfo(){
+        String url = globals.getUrlListFriends() + userEmail;
+        final List<User> userList = new ArrayList<>();
+        JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("Response", response.toString());
+                for(int i = 0; i < response.length(); i++) {
+                    try{
+                        JSONObject obj = response.getJSONObject(i);
+
+                        User user = Utils.parseJsonToUser(obj);
+
+                        userList.add(user);
+
+                        setupMarkers(userList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error", error.getMessage());
+            }
+        });
+        queue.add(request);
+        return userList;
     }
 
     @Override
@@ -266,8 +321,21 @@ public class MapsActivity extends AppCompatActivity
             return;
         }
         //Change to true if circle and arrow should be present for accurate navigation
-        map.setMyLocationEnabled(false);
+        map.setMyLocationEnabled(true);
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // Create a criteria object to retrieve provider
+        Criteria criteria = new Criteria();
 
+        // Get the name of the best provider
+        String provider = locationManager.getBestProvider(criteria, true);
+        mLastLocation = locationManager.getLastKnownLocation(provider);
+        if(mLastLocation != null) {
+            double dLatitude = mLastLocation.getLatitude();
+            double dLongitude = mLastLocation.getLongitude();
+            Log.d("COORDS", String.valueOf(dLatitude));
+            Log.d("COORDS", String.valueOf(dLongitude));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
+        }
     }
 
     @Override
@@ -328,8 +396,8 @@ public class MapsActivity extends AppCompatActivity
     public void onConnected(Bundle bundle) {
 
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000 * 10);
-        mLocationRequest.setFastestInterval(1000 * 10);
+        mLocationRequest.setInterval(1000 * 60);
+        mLocationRequest.setFastestInterval(1000 * 30);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         //mLocationRequest.setSmallestDisplacement(0.1F);
@@ -376,10 +444,10 @@ public class MapsActivity extends AppCompatActivity
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
         Toast.makeText(MapsActivity.this, "Lat: " + dLatitude + " Long: " + dLongitude, Toast.LENGTH_SHORT).show();
-        marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
-                .title("My Location").icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 20));
+//        marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
+//                .title("My Location").icon(BitmapDescriptorFactory
+//                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+//        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
 
         geocoder = new Geocoder(this, Locale.getDefault());
 

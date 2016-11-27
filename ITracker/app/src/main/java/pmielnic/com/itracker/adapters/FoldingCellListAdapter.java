@@ -14,26 +14,30 @@ import java.util.List;
 
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.model.Item;
+import pmielnic.com.itracker.model.User;
 
 /**
  * Simple example of ListAdapter for using with Folding Cell
  * Adapter holds indexes of unfolded elements for correct work with default reusable views behavior
  */
-public class FoldingCellListAdapter extends ArrayAdapter<Item>{
+public class FoldingCellListAdapter extends ArrayAdapter<User>{
 
     private HashSet<Integer> unfoldedIndexes = new HashSet<>();
     private View.OnClickListener defaultRequestBtnClickListener;
 
 
-    public FoldingCellListAdapter(Context context, List<Item> objects) {
-        super(context, 0, objects);
+//    public FoldingCellListAdapter(Context context, List<Item> objects) {
+//        super(context, 0, objects);
+//    }
 
+    public FoldingCellListAdapter(Context context, List<User> objects) {
+        super(context, 0, objects);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // get item for selected view
-        Item item = getItem(position);
+        User user = getItem(position);
         // if cell is exists - reuse it, if not - create the new one from resource
         FoldingCell cell = (FoldingCell) convertView;
         ViewHolder viewHolder;
@@ -62,17 +66,17 @@ public class FoldingCellListAdapter extends ArrayAdapter<Item>{
         }
 
         // bind data from selected element to view through view holder
-        viewHolder.price.setText(item.getPrice());
-        viewHolder.time.setText(item.getTime());
-        viewHolder.date.setText(item.getDate());
-        viewHolder.fromAddress.setText(item.getFromAddress());
-        viewHolder.toAddress.setText(item.getToAddress());
-        viewHolder.requestsCount.setText(String.valueOf(item.getRequestsCount()));
-        viewHolder.pledgePrice.setText(item.getPledgePrice());
+        viewHolder.price.setText(user.getName());
+        viewHolder.time.setText("TIME");
+        viewHolder.date.setText("DATE");
+        viewHolder.fromAddress.setText("Last location");
+        viewHolder.toAddress.setText(user.getLocation().getAddress().getStreetName());
+        viewHolder.requestsCount.setText(user.getLocation().getAddress().getCountry());
+        viewHolder.pledgePrice.setText(user.getLocation().getAddress().getCity());
 
         // set custom btn handler for list item from that item
-        if (item.getRequestBtnClickListener() != null) {
-            viewHolder.contentRequestBtn.setOnClickListener(item.getRequestBtnClickListener());
+        if (user.getRequestBtnClickListener() != null) {
+            viewHolder.contentRequestBtn.setOnClickListener(user.getRequestBtnClickListener());
         } else {
             // (optionally) add "default" handler if no handler found in item
             viewHolder.contentRequestBtn.setOnClickListener(defaultRequestBtnClickListener);

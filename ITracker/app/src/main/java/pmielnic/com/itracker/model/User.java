@@ -1,5 +1,7 @@
 package pmielnic.com.itracker.model;
 
+import android.view.View;
+
 /**
  * Created by Pawel Mielniczuk on 2016-10-30.
  */
@@ -9,6 +11,7 @@ public class User {
     private String name;
     private String email;
     private Location location;
+    private View.OnClickListener requestBtnClickListener;
 
     public Long getId() {
         return id;
@@ -49,5 +52,13 @@ public class User {
                 ", email='" + email + '\'' +
                 ", location=" + location +
                 '}';
+    }
+
+    public View.OnClickListener getRequestBtnClickListener() {
+        return requestBtnClickListener;
+    }
+
+    public void setRequestBtnClickListener(View.OnClickListener requestBtnClickListener) {
+        this.requestBtnClickListener = requestBtnClickListener;
     }
 }

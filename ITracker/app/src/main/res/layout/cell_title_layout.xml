@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="155dp"
         android:layout_weight="3"
-        android:background="@color/bgTitleLeft"
+        android:background="@color/blue_grey_800"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingBottom="20dp"
@@ -119,22 +119,6 @@
             android:layout_alignStart="@id/title_requests_count"
             android:text="@string/requests_count_badge" />
 
-        <TextView
-            android:id="@+id/title_weight"
-            style="@style/TitleBadgeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:text="@string/weight_mock" />
-
-        <TextView
-            style="@style/TitleBadgeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/title_weight"
-            android:layout_alignStart="@id/title_weight"
-            android:text="@string/weight_badge" />
 
         <TextView
             android:id="@+id/title_pledge"
@@ -148,9 +132,9 @@
             style="@style/TitleBadgeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/title_pledge"
-            android:layout_alignStart="@id/title_pledge"
-            android:text="@string/pledge_badge" />
+            android:text="@string/pledge_badge"
+            android:layout_above="@+id/title_pledge"
+            android:layout_alignStart="@+id/title_pledge" />
 
     </RelativeLayout>
 </LinearLayout>

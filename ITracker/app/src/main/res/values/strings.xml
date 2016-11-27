@@ -5,7 +5,7 @@
     <string name="sign_out">Sign Out</string>
     <string name="resume">Open Map</string>
     <string name="desc_google_icon">Google Logo</string>
-    <string name="title_text">Google Sign-In\nHello</string>
+    <string name="title_text">Location Tracker\nWelcome</string>
     <string name="loading">Loading</string>
     <string name="signed_in_fmt">Signed in as: %s</string>
     <string name="server_client_id">680809743942-g9vv2rpetm9i2gtm1dk61v4ddohke06e.apps.googleusercontent.com</string>
@@ -18,13 +18,12 @@
     <string name="order_id_mock" translatable="false"># 1234–5678</string>
     <string name="price_mock" translatable="false">$25</string>
     <string name="requests_count_mock" translatable="false">5</string>
-    <string name="requests_count_badge" translatable="false">REQUESTS</string>
+    <string name="requests_count_badge" translatable="false">COUNTRY</string>
     <string name="weight_mock" translatable="false">50 oz</string>
-    <string name="weight_badge" translatable="false">WEIGHT</string>
     <string name="pledge_mock" translatable="false">$150</string>
-    <string name="pledge_badge" translatable="false">PLEDGE</string>
+    <string name="pledge_badge" translatable="false">CITY</string>
     <string name="sender_badge" translatable="false">USER</string>
-    <string name="client_name_mock" translatable="false">Edward Norton</string>
+    <string name="client_name_mock" translatable="false">SAMPLE NAME</string>
     <string name="rating_mock" translatable="false">(26)</string>
     <string name="from_badge" translatable="false">LAST LOCATION</string>
     <string name="to_badge" translatable="false">CURRENT LOCATION</string>
@@ -34,7 +33,6 @@
     <string name="deadline_badge" translatable="false">REQUEST DEADLINE</string>
     <string name="deadline_time_mock" translatable="false">24 minutes</string>
     <string name="request_btn_text" translatable="false">REQUEST</string>
-    <string name="btn_annotation_mock" translatable="false">5 people have sent a request</string>
     <string name="content_from1_mock">W 90th St</string>
     <string name="content_from2_mock">New York, NY 10025</string>
     <string name="content_to1_mock">46th Ave</string>

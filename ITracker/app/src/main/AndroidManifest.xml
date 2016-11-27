@@ -40,7 +40,7 @@
         </activity>
         <receiver android:name=".receivers.AlarmReceiver"/>
         <activity android:name=".MapsActivity"/>
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".FriendListActivity"/>
         <activity android:name=".SearchActivity">
             <intent-filter>
             <action android:name="android.intent.action.SEARCH" />
