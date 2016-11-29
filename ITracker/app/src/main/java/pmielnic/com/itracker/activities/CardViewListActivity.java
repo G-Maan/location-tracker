@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
         import java.util.HashSet;
 
 import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.model.NamedLocation;
 
 public class CardViewListActivity extends AppCompatActivity {
 
@@ -55,6 +56,14 @@ public class CardViewListActivity extends AppCompatActivity {
 
     }
 
+
+    private void setMapLocation(GoogleMap map, NamedLocation data) {
+        // Add a marker for this item and set the camera
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(data.location, 13f));
+        map.addMarker(new MarkerOptions().position(data.location));
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
     private class MapAdapter extends ArrayAdapter<NamedLocation>{
 
         private final HashSet<MapView> mMaps = new HashSet<MapView>();
@@ -132,9 +141,9 @@ public class CardViewListActivity extends AppCompatActivity {
                     int id = v.getId();
                     switch (id){
                         case R.id.lite_listrow_map:
-                    NamedLocation namedLocation = getItem(v.getId());
-                    Toast.makeText(getApplicationContext(), namedLocation.toString(), Toast.LENGTH_SHORT).show();
-break;
+                            NamedLocation namedLocation = getItem(v.getId());
+                            Toast.makeText(getApplicationContext(), namedLocation.toString(), Toast.LENGTH_SHORT).show();
+                            break;
                     }
                 }
             });
@@ -145,15 +154,6 @@ break;
             return mMaps;
         }
     }
-
-    private void setMapLocation(GoogleMap map, NamedLocation data) {
-        // Add a marker for this item and set the camera
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(data.location, 13f));
-        map.addMarker(new MarkerOptions().position(data.location));
-        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-    }
-
     class ViewHolder implements OnMapReadyCallback{
 
         MapView mapView;
@@ -206,32 +206,7 @@ break;
         }
     };
 
-    /**
-     * Location represented by a position ({@link com.google.android.gms.maps.model.LatLng} and a
-     * name ({@link java.lang.String}).
-     */
-    private static class NamedLocation {
 
-        public final String name;
-
-        public final String streetName;
-
-        public final LatLng location;
-
-        NamedLocation(String name, String streetName, LatLng location) {
-            this.name = name;
-            this.streetName = streetName;
-            this.location = location;
-        }
-
-        @Override
-        public String toString() {
-            return "NamedLocation{" +
-                    "name='" + name + '\'' +
-                    ", location=" + location +
-                    '}';
-        }
-    }
 
     /**
      * A list of locations to show in this ListView.
