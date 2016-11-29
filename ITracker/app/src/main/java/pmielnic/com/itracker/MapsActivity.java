@@ -81,7 +81,7 @@ public class MapsActivity extends AppCompatActivity
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-    private String[] mDrawerListItems = { "Find users", "Friend list"};
+    private String[] mDrawerListItems = { "Find users", "Friend list", "List New"};
     private List<Marker> markers;
 
     private GoogleMap map;
@@ -97,6 +97,7 @@ public class MapsActivity extends AppCompatActivity
     private String userName;
     private String userEmail;
     private PendingIntent pendingIntent;
+    private SupportMapFragment supportMapFragment;
 
     private Globals globals;
 
@@ -159,6 +160,15 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
+    private void moveToLocation(pmielnic.com.itracker.model.Location location){
+        if(map != null) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            Log.d("LATLNG", location.getLatitude() + " " + location.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
+            map.addMarker(new MarkerOptions().position(latLng));
+        }
+    }
+
     public void start() {
         AlarmManager am=(AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, AlarmReceiver.class);
@@ -181,6 +191,12 @@ public class MapsActivity extends AppCompatActivity
                 break;
             case 1:
                 intent = new Intent(this, FriendListActivity.class);
+                intent.putExtra("email", userEmail);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, LiteListDemoActivity.class);
                 intent.putExtra("email", userEmail);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
@@ -334,7 +350,12 @@ public class MapsActivity extends AppCompatActivity
             double dLongitude = mLastLocation.getLongitude();
             Log.d("COORDS", String.valueOf(dLatitude));
             Log.d("COORDS", String.valueOf(dLongitude));
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
+//            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
+            Intent i = getIntent();
+            if(i.getParcelableExtra("location_parcel") != null){
+                pmielnic.com.itracker.model.Location locationParcel = i.getParcelableExtra("location_parcel");
+                moveToLocation(locationParcel);
+            }
         }
     }
 
