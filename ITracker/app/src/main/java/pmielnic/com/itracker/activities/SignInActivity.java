@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +25,7 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
+import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.globals.Globals;
 
 /**

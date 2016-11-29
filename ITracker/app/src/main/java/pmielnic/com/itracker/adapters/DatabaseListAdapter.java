@@ -7,14 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 import pmielnic.com.itracker.R;
-import pmielnic.com.itracker.SearchActivity;
 import pmielnic.com.itracker.model.User;
 
 /**

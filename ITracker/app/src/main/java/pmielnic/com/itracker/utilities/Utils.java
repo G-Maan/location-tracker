@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.utilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;

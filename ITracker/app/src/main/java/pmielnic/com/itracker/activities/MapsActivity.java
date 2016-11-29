@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.activities;
 
 import android.Manifest;
 import android.app.AlarmManager;
@@ -46,7 +46,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -66,6 +65,8 @@ import java.util.Map;
 
 import java.util.List;
 
+import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.globals.Globals;
 import pmielnic.com.itracker.model.User;
 import pmielnic.com.itracker.receivers.AlarmReceiver;
@@ -196,7 +197,7 @@ public class MapsActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case 2:
-                intent = new Intent(this, LiteListDemoActivity.class);
+                intent = new Intent(this, CardViewListActivity.class);
                 intent.putExtra("email", userEmail);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);

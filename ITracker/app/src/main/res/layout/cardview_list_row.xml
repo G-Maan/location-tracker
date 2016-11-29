@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="290dp"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="5dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="5dp">
+
+    <TextView
+        android:id="@+id/cardview_user_name"
+        android:text="USERNAME"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:paddingLeft="5dp"
+        android:textSize="20dp"/>
+
+    <TextView
+        android:id="@+id/cardview_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:text="User Current Location"
+        android:textSize="20dp" />
+
+    <!-- MapView in lite mode. Note that it needs to be initialised
+         programmatically before it can be used. -->
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/lite_listrow_map"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="5dp"
+        map:liteMode="true"
+        android:clickable="false"
+        map:mapType="none" />
+
+    <Button
+        android:id="@+id/show_on_map_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/darker_gray"
+        android:text="Show on map"/>
+</LinearLayout>
+</android.support.v7.widget.CardView>

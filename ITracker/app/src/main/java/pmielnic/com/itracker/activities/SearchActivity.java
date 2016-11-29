@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.activities;
 
 import android.app.ProgressDialog;
 import android.app.SearchManager;
@@ -9,10 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,10 +25,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.adapters.DatabaseListAdapter;
 import pmielnic.com.itracker.globals.Globals;
-import pmielnic.com.itracker.model.Address;
-import pmielnic.com.itracker.model.Location;
 import pmielnic.com.itracker.model.User;
 
 /**
