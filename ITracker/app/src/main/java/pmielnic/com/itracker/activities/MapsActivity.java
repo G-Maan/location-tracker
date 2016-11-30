@@ -25,6 +25,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
@@ -73,6 +74,7 @@ import java.util.Map;
 
 import java.util.List;
 
+import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.AnimatorUtils;
 import pmielnic.com.itracker.utilities.Utils;
@@ -81,17 +83,11 @@ import pmielnic.com.itracker.model.User;
 import pmielnic.com.itracker.receivers.AlarmReceiver;
 
 
-public class MapsActivity extends AppCompatActivity
+public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, View.OnClickListener {
 
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
-    private String mActivityTitle;
-    private String[] mDrawerListItems = { "Find users", "Friend list", "List New", "ARC"};
     private List<Marker> markers;
 
     private GoogleMap map;
@@ -120,7 +116,11 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+//        setContentView(R.layout.activity_maps);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView = inflater.inflate(R.layout.activity_maps, null, false);
+        mDrawerLayout.addView(contentView, 0);
 
         globals = ((Globals)getApplicationContext());
 
@@ -136,20 +136,6 @@ public class MapsActivity extends AppCompatActivity
         pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
         start();
 
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        addDrawerItems();
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-                mDrawerLayout.closeDrawer(mDrawerList);
-            }
-        });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
-        setupDrawer();
 
         fab = findViewById(R.id.fab);
         menuLayout = findViewById(R.id.menu_layout);
@@ -202,81 +188,9 @@ public class MapsActivity extends AppCompatActivity
         am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 60 * 10, pi); // Millisec * Second * Minute
     }
 
-    private void selectItem(int position) {
-        // update selected item and title, then close the drawer
-        mDrawerList.setItemChecked(position, true);
-        Intent intent;
-        switch(position){
-            case 0:
-                intent = new Intent(this, SearchActivity.class);
-                intent.putExtra("email", userEmail);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
-                break;
-            case 1:
-                intent = new Intent(this, FriendListActivity.class);
-                intent.putExtra("email", userEmail);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
-                break;
-            case 2:
-                intent = new Intent(this, CardViewListActivity.class);
-                intent.putExtra("email", userEmail);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
-                break;
-            case 3:
-                intent = new Intent(this, ArcPath.class);
-                intent.putExtra("email", userEmail);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
-                break;
-            default:
-        intent = new Intent(this, SignInActivity.class);
-        mDrawerLayout.closeDrawer(mDrawerList);
-        finish();
-        startActivity(intent);
-        }
-    }
-
     @Override
     public void onBackPressed() {
         return;
-    }
-
-    private void addDrawerItems() {
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mDrawerListItems);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("Navigate to:");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -411,18 +325,6 @@ public class MapsActivity extends AppCompatActivity
             // other 'case' lines to check for other
             // permissions this app might request
         }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override

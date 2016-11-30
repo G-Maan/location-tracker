@@ -4,10 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -19,13 +21,14 @@ import com.ogaclejapan.arclayout.ArcLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.AnimatorUtils;
 
 /**
  * Created by Pawel on 2016-11-30.
  */
-public class ArcPath extends AppCompatActivity implements View.OnClickListener {
+public class ArcPath extends BaseActivity implements View.OnClickListener {
 
     Toast toast = null;
     View fab;
@@ -35,7 +38,11 @@ public class ArcPath extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.like_a_path);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView  = inflater.inflate(R.layout.like_a_path, null, false);
+        mDrawerLayout.addView(contentView, 0);
+
+//        setContentView(R.layout.like_a_path);
 
         fab = findViewById(R.id.fab);
         menuLayout = findViewById(R.id.menu_layout);

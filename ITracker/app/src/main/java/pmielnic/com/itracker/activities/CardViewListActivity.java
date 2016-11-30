@@ -19,6 +19,7 @@ import android.content.Context;
         import android.support.v4.app.ListFragment;
         import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
         import android.view.ViewGroup;
         import android.widget.AbsListView;
@@ -35,13 +36,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.globals.Globals;
 import pmielnic.com.itracker.model.NamedLocation;
 import pmielnic.com.itracker.model.User;
 import pmielnic.com.itracker.utilities.Utils;
 
-public class CardViewListActivity extends AppCompatActivity {
+public class CardViewListActivity extends BaseActivity {
 
     private ListFragment mList;
 
@@ -61,7 +63,11 @@ public class CardViewListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.cardview_list);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView = inflater.inflate(R.layout.cardview_list, null, false);
+        mDrawerLayout.addView(contentView, 0);
+
+//        setContentView(R.layout.cardview_list);
 
         Bundle bundle = getIntent().getExtras();
         if(bundle != null){

@@ -1,7 +1,9 @@
 package pmielnic.com.itracker.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -165,6 +167,10 @@ public class SignInActivity extends AppCompatActivity implements
             });
             queue.add(stringRequest);
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+            SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("email", userEmail);
+            editor.commit();
             updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.

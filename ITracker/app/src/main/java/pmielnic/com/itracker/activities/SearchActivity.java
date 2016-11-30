@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.adapters.DatabaseListAdapter;
@@ -34,7 +36,7 @@ import pmielnic.com.itracker.model.User;
 /**
  * Created by Pawel Mielniczuk on 2016-10-30.
  */
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
 
     private List<User> userList = new ArrayList<>();
     private ListView listView;
@@ -49,7 +51,11 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_activity);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView = inflater.inflate(R.layout.search_activity, null, false);
+        mDrawerLayout.addView(contentView, 0);
+
+//        setContentView(R.layout.search_activity);
 
         globals = ((Globals)getApplicationContext());
 

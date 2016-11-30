@@ -1,8 +1,10 @@
 package pmielnic.com.itracker.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -22,6 +24,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.adapters.FoldingCellListAdapter;
@@ -31,7 +34,7 @@ import pmielnic.com.itracker.model.User;
 /**
  * Example of using Folding Cell with ListView and ListAdapter
  */
-public class FriendListActivity extends AppCompatActivity {
+public class FriendListActivity extends BaseActivity {
 
     private String userEmail;
     private RequestQueue queue;
@@ -42,7 +45,12 @@ public class FriendListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView = inflater.inflate(R.layout.activity_main, null, false);
+        mDrawerLayout.addView(contentView, 0);
+
+//        setContentView(R.layout.activity_main);
 
         globals = ((Globals)getApplicationContext());
 
