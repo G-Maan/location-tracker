@@ -1,5 +1,10 @@
 package pmielnic.com.itracker.activities;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
         import com.google.android.gms.maps.GoogleMap;
         import com.google.android.gms.maps.MapView;
@@ -8,11 +13,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
         import com.google.android.gms.maps.model.LatLng;
         import com.google.android.gms.maps.model.MarkerOptions;
 
-        import android.content.Context;
+import android.app.ProgressDialog;
+import android.content.Context;
         import android.os.Bundle;
         import android.support.v4.app.ListFragment;
         import android.support.v7.app.AppCompatActivity;
-        import android.view.View;
+import android.util.Log;
+import android.view.View;
         import android.view.ViewGroup;
         import android.widget.AbsListView;
         import android.widget.ArrayAdapter;
@@ -20,10 +27,19 @@ import com.google.android.gms.maps.CameraUpdateFactory;
         import android.widget.TextView;
         import android.widget.Toast;
 
-        import java.util.HashSet;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.globals.Globals;
 import pmielnic.com.itracker.model.NamedLocation;
+import pmielnic.com.itracker.model.User;
+import pmielnic.com.itracker.utilities.Utils;
 
 public class CardViewListActivity extends AppCompatActivity {
 
@@ -31,7 +47,15 @@ public class CardViewListActivity extends AppCompatActivity {
 
     private MapAdapter mAdapter;
 
+    private List<User> userList = new ArrayList<>();
+
+    private ProgressDialog mProgressDialog;
+
     private String email;
+
+    private RequestQueue queue;
+
+    Globals globals;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,37 +63,85 @@ public class CardViewListActivity extends AppCompatActivity {
 
         setContentView(R.layout.cardview_list);
 
-
-        // Set a custom list adapter for a list of locations
-        mAdapter = new MapAdapter(this, LIST_LOCATIONS);
-        mList = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.list);
-        mList.setListAdapter(mAdapter);
-
-        // Set a RecyclerListener to clean up MapView from ListView
-        AbsListView lv = mList.getListView();
-        lv.setRecyclerListener(mRecycleListener);
-
         Bundle bundle = getIntent().getExtras();
         if(bundle != null){
             email = bundle.getString("email");
         }
 
+        globals = ((Globals)getApplicationContext());
+
+        queue = Volley.newRequestQueue(this);
+
+        listFriends();
     }
 
+    private void listFriends(){
+        String url = globals.getUrlListFriends() + email;
+        showProgressDialog();
+        JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                Log.d("Response", response.toString());
+                for(int i = 0; i < response.length(); i++) {
+                    try{
+                        JSONObject obj = response.getJSONObject(i);
 
-    private void setMapLocation(GoogleMap map, NamedLocation data) {
+                        User user = Utils.parseJsonToUser(obj);
+
+                        userList.add(user);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Set a custom list adapter for a list of locations
+                mAdapter = new MapAdapter(CardViewListActivity.this, userList);
+                mList = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.list);
+                mList.setListAdapter(mAdapter);
+
+                // Set a RecyclerListener to clean up MapView from ListView
+                AbsListView lv = mList.getListView();
+                lv.setRecyclerListener(mRecycleListener);
+
+                hideProgressDialog();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error", error.getMessage());
+            }
+        });
+        queue.add(request);
+    }
+
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.hide();
+        }
+    }
+
+    private void setMapLocation(GoogleMap map, User data) {
         // Add a marker for this item and set the camera
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(data.location, 13f));
-        map.addMarker(new MarkerOptions().position(data.location));
+        LatLng latLng = new LatLng(data.getLocation().getLatitude(), data.getLocation().getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
+        map.addMarker(new MarkerOptions().position(latLng));
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
-    private class MapAdapter extends ArrayAdapter<NamedLocation>{
+    private class MapAdapter extends ArrayAdapter<User>{
 
         private final HashSet<MapView> mMaps = new HashSet<MapView>();
 
-        public MapAdapter(Context context, NamedLocation[] locations) {
-            super(context, R.layout.cardview_list_row, R.id.cardview_user_name, locations);
+        public MapAdapter(Context context, List<User> users) {
+            super(context, R.layout.cardview_list_row, R.id.cardview_user_name, users);
         }
 
 
@@ -90,19 +162,11 @@ public class CardViewListActivity extends AppCompatActivity {
                 holder.userLocation = (TextView) row.findViewById(R.id.cardview_location);
                 holder.button = (Button) row.findViewById(R.id.show_on_map_button);
 
-                holder.mapView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        NamedLocation namedLocation = getItem(position);
-                        Toast.makeText(getApplicationContext(), namedLocation.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
                 holder.button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        NamedLocation namedLocation = getItem(position);
-                        Toast.makeText(getApplicationContext(), namedLocation.toString(), Toast.LENGTH_SHORT).show();
+                        User user = getItem(position);
+                        Toast.makeText(getApplicationContext(), user.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 // Set holder as tag for row for more efficient access.
@@ -118,8 +182,8 @@ public class CardViewListActivity extends AppCompatActivity {
                 holder = (ViewHolder) row.getTag();
             }
 
-            // Get the NamedLocation for this item and attach it to the MapView
-            NamedLocation item = getItem(position);
+            // Get the User for this item and attach it to the MapView
+            User item = getItem(position);
             holder.mapView.setTag(item);
             holder.mapView.setClickable(false);
 
@@ -132,21 +196,8 @@ public class CardViewListActivity extends AppCompatActivity {
                 setMapLocation(holder.map, item);
             }
             // Set the text label for this item
-            holder.userName.setText(item.name);
-            holder.userLocation.setText(item.streetName);
-            row.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    int id = v.getId();
-                    switch (id){
-                        case R.id.lite_listrow_map:
-                            NamedLocation namedLocation = getItem(v.getId());
-                            Toast.makeText(getApplicationContext(), namedLocation.toString(), Toast.LENGTH_SHORT).show();
-                            break;
-                    }
-                }
-            });
+            holder.userName.setText(item.getName());
+            holder.userLocation.setText(item.getLocation().getAddress().getStreetName());
             return row;
         }
 
@@ -166,7 +217,7 @@ public class CardViewListActivity extends AppCompatActivity {
         public void onMapReady(GoogleMap googleMap) {
             MapsInitializer.initialize(getApplicationContext());
             map = googleMap;
-            NamedLocation data = (NamedLocation) mapView.getTag();
+            User data = (User) mapView.getTag();
             if (data != null) {
                 setMapLocation(map, data);
             }

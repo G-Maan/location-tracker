@@ -42,6 +42,7 @@
         <activity android:name=".activities.MapsActivity"/>
         <activity android:name=".activities.FriendListActivity"/>
         <activity android:name=".activities.CardViewListActivity"/>
+        <activity android:name=".activities.ArcPath"/>
         <activity android:name=".activities.SearchActivity">
             <intent-filter>
             <action android:name="android.intent.action.SEARCH" />
