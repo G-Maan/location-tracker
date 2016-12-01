@@ -20,12 +20,16 @@ import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -79,7 +83,7 @@ public class MapsActivity extends BaseActivity
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
         LocationListener, View.OnClickListener {
 
-    private List<Marker> markers;
+    private List<Marker> markers = new ArrayList();
 
     private GoogleMap map;
     private LocationRequest mLocationRequest;
@@ -94,12 +98,13 @@ public class MapsActivity extends BaseActivity
     private PendingIntent pendingIntent;
     private SupportMapFragment supportMapFragment;
 
-    Toast toast = null;
-    View fab;
-    View menuLayout;
-    ArcLayout arcLayout;
+    private Toast toast = null;
+    private View fab;
+    private View menuLayout;
+    private ArcLayout arcLayout;
 
     private Globals globals;
+    private List<User> userList = new ArrayList<>();
 
 
     @Override
@@ -120,12 +125,6 @@ public class MapsActivity extends BaseActivity
         fab = findViewById(R.id.fab);
         menuLayout = findViewById(R.id.menu_layout);
         arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
-
-        for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
-            arcLayout.getChildAt(i).setOnClickListener(this);
-        }
-
-        fab.setOnClickListener(this);
 
         queue = Volley.newRequestQueue(this);
         String url = globals.getUrlPrint() + userName;
@@ -150,12 +149,36 @@ public class MapsActivity extends BaseActivity
         }
     }
 
+    private void setupArcLayout(){
+
+        ArcLayout.LayoutParams params = new ArcLayout.LayoutParams(130, 130);
+        for(User u: userList){
+            Button b = new AppCompatButton(this);
+            b.setText(u.getName().substring(0,1));
+            b.setBackgroundResource(R.drawable.path_white_oval);
+            b.setLayoutParams(params);
+            arcLayout.addView(b);
+        }
+
+        for (int i = 0, size = arcLayout.getChildCount(); i < size; i++) {
+            arcLayout.getChildAt(i).setOnClickListener(this);
+        }
+
+        fab.setOnClickListener(this);
+    }
+
     private void moveToLocation(pmielnic.com.itracker.model.Location location){
         if(map != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             Log.d("LATLNG", location.getLatitude() + " " + location.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
-            map.addMarker(new MarkerOptions().position(latLng));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
+            int index = 0;
+            for(User u: userList){
+                if(u.getLocation().equals(location)){
+                    index = userList.indexOf(u);
+                }
+            }
+            markers.get(index).showInfoWindow();
         }
     }
 
@@ -199,13 +222,15 @@ public class MapsActivity extends BaseActivity
             LatLng latLng = new LatLng(u.getLocation().getLatitude(), u.getLocation().getLongitude());
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng).title(u.getName()).snippet(u.getLocation().getAddress().getStreetName()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-            map.addMarker(markerOptions);
+            Marker marker = map.addMarker(markerOptions);
+
+            markers.add(marker);
         }
     }
 
     private List<User> getMarkerInfo(){
         String url = globals.getUrlListFriends() + userEmail;
-        final List<User> userList = new ArrayList<>();
+        userList = new ArrayList<>();
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -218,11 +243,12 @@ public class MapsActivity extends BaseActivity
 
                         userList.add(user);
 
-                        setupMarkers(userList);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                setupMarkers(userList);
+                setupArcLayout();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -243,7 +269,6 @@ public class MapsActivity extends BaseActivity
 
         Intent i = getIntent();
         if(i.getParcelableExtra("location_parcel") != null){
-            Toast.makeText(getApplicationContext(), "here", Toast.LENGTH_SHORT).show();
             pmielnic.com.itracker.model.Location locationParcel = i.getParcelableExtra("location_parcel");
             moveToLocation(locationParcel);
         }
@@ -377,7 +402,7 @@ public class MapsActivity extends BaseActivity
 
         double dLatitude = mLastLocation.getLatitude();
         double dLongitude = mLastLocation.getLongitude();
-        Toast.makeText(MapsActivity.this, "Lat: " + dLatitude + " Long: " + dLongitude, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(MapsActivity.this, "Lat: " + dLatitude + " Long: " + dLongitude, Toast.LENGTH_SHORT).show();
 //        marker = map.addMarker(new MarkerOptions().position(new LatLng(dLatitude, dLongitude))
 //                .title("My Location").icon(BitmapDescriptorFactory
 //                        .defaultMarker(BitmapDescriptorFactory.HUE_RED)));
@@ -433,27 +458,19 @@ public class MapsActivity extends BaseActivity
         }
 
         if (v instanceof Button) {
-            showToast((Button) v);
+            int index = ((ViewGroup) v.getParent()).indexOfChild(v);
+            pmielnic.com.itracker.model.Location selectedUserLocation = userList.get(index).getLocation();
+            moveToLocation(selectedUserLocation);
+            hideMenu();
         }
-    }
-    private void showToast(Button btn) {
-        if (toast != null) {
-            toast.cancel();
-        }
-
-        String text = "Clicked: " + btn.getText();
-        toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        toast.show();
-
     }
 
     private void onFabClick(View v) {
-        if (v.isSelected()) {
+        if (menuLayout.getVisibility() == View.VISIBLE) {
             hideMenu();
         } else {
             showMenu();
         }
-        v.setSelected(!v.isSelected());
     }
 
     private void showMenu() {

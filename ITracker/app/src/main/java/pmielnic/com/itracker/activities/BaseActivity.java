@@ -76,6 +76,7 @@ public class BaseActivity extends AppCompatActivity{ //changed from depricated A
         switch(position){
             case 0:
                 intent = new Intent(this, MapsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;

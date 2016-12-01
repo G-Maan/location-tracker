@@ -52,8 +52,6 @@ public class SearchActivity extends BaseActivity {
         View contentView = inflater.inflate(R.layout.search_activity, null, false);
         mDrawerLayout.addView(contentView, 0);
 
-//        setContentView(R.layout.search_activity);
-
         globals = ((Globals)getApplicationContext());
 
         progressDialog = new ProgressDialog(this);
@@ -96,12 +94,7 @@ public class SearchActivity extends BaseActivity {
         hideProgressDialog();
     }
 
-    private void addFriend(){
-
-    }
-
     private void searchFor(String text){
-        System.out.println(userEmail);
         String url = globals.getUrlFindUser() + userEmail + "/" + text;
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
