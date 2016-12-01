@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -79,12 +80,8 @@ public class LocationService extends Service implements LocationListener, Google
         Log.d("onStartCommand", "Called onStartCommand()");
         mGoogleApiClient.connect();
 
-        if(intent != null) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                userEmail = extras.getString("email");
-            }
-        }
+        SharedPreferences sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        userEmail = sharedPreferences.getString("user_email", "");
 
         connectivityManager = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);

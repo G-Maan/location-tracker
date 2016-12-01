@@ -1,4 +1,4 @@
-package pmielnic.com.itracker;
+package pmielnic.com.itracker.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,19 +14,18 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import pmielnic.com.itracker.activities.ArcPath;
-import pmielnic.com.itracker.activities.CardViewListActivity;
-import pmielnic.com.itracker.activities.FriendListActivity;
-import pmielnic.com.itracker.activities.SearchActivity;
-import pmielnic.com.itracker.activities.SignInActivity;
+import pmielnic.com.itracker.R;
 
 public class BaseActivity extends AppCompatActivity{ //changed from depricated ActionBarActivity
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
-    protected DrawerLayout mDrawerLayout;
     private String mActivityTitle;
-    private String[] mDrawerListItems = { "Find users", "Friend list", "List New", "ARC"};
+    private String[] mDrawerListItems;
+    protected DrawerLayout mDrawerLayout;
+
+    protected String userEmail;
+    protected String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +46,9 @@ public class BaseActivity extends AppCompatActivity{ //changed from depricated A
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mActivityTitle = getTitle().toString();
         setupDrawer();
+
+        setupCredentials();
+
     }
 
     @Override
@@ -61,46 +63,48 @@ public class BaseActivity extends AppCompatActivity{ //changed from depricated A
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private void setupCredentials(){
+        SharedPreferences sharedPreferences = getSharedPreferences("credentials",MODE_PRIVATE);
+        userEmail = sharedPreferences.getString("user_email", "");
+        userName = sharedPreferences.getString("user_name", "");
+    }
+
     private void selectItem(int position) {
         // update selected item and title, then close the drawer
-        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-        String userEmail = sharedPreferences.getString("email", null);
         mDrawerList.setItemChecked(position, true);
         Intent intent;
         switch(position){
             case 0:
-                intent = new Intent(this, SearchActivity.class);
-                intent.putExtra("email", userEmail);
+                intent = new Intent(this, MapsActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
             case 1:
-                intent = new Intent(this, FriendListActivity.class);
-                intent.putExtra("email", userEmail);
+                intent = new Intent(this, SearchActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
             case 2:
-                intent = new Intent(this, CardViewListActivity.class);
-                intent.putExtra("email", userEmail);
+                intent = new Intent(this, FriendListActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
             case 3:
-                intent = new Intent(this, ArcPath.class);
-                intent.putExtra("email", userEmail);
+                intent = new Intent(this, CardViewListActivity.class);
+                mDrawerLayout.closeDrawer(mDrawerList);
+                startActivity(intent);
+                break;
+            case 4:
+                intent = new Intent(this, ArcPathActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
             default:
-                intent = new Intent(this, SignInActivity.class);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                finish();
-                startActivity(intent);
         }
     }
 
     private void addDrawerItems() {
+        mDrawerListItems = getResources().getStringArray(R.array.nav_drawer_items);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mDrawerListItems);
         mDrawerList.setAdapter(mAdapter);
     }

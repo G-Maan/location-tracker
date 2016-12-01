@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">iTracker</string>
-    <string name="title_activity_maps">iTracker</string>
+    <string name="app_name">Location Tracker</string>
+    <string name="title_activity_maps">Location Tracker</string>
     <string name="signed_out">Signed out</string>
     <string name="sign_out">Sign Out</string>
     <string name="resume">Open Map</string>
@@ -50,12 +50,11 @@
     <string name="url_list_friends">list/friends/</string>
 
     <string-array name="nav_drawer_items">
-        <item>First</item>
-        <item>Second</item>
-        <item>Third</item>
-        <item>Fourth</item>
-        <item>Fifth</item>
-        <item>Sixth</item>
+        <item>Map</item>
+        <item>Find users</item>
+        <item>Friend list</item>
+        <item>Friend list NEW</item>
+        <item>Arc layout TEST</item>
     </string-array>
     <array name="nav_drawer_icons">
         <item>@drawable/ic_add_black_24dp</item>

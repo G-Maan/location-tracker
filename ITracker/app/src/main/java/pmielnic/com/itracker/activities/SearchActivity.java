@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +25,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.adapters.DatabaseListAdapter;
@@ -44,7 +42,6 @@ public class SearchActivity extends BaseActivity {
     private ProgressDialog progressDialog;
     private RequestQueue queue;
     private SearchView searchView;
-    private String userEmail;
     Globals globals;
 
 
@@ -58,11 +55,6 @@ public class SearchActivity extends BaseActivity {
 //        setContentView(R.layout.search_activity);
 
         globals = ((Globals)getApplicationContext());
-
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null){
-            userEmail = bundle.getString("email");
-        }
 
         progressDialog = new ProgressDialog(this);
         listView = (ListView) findViewById(R.id.list);

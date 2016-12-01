@@ -39,11 +39,16 @@
             </intent-filter>
         </activity>
         <receiver android:name=".receivers.AlarmReceiver"/>
-        <activity android:name=".activities.MapsActivity"/>
-        <activity android:name=".activities.FriendListActivity"/>
-        <activity android:name=".activities.CardViewListActivity"/>
-        <activity android:name=".activities.ArcPath"/>
-        <activity android:name=".activities.SearchActivity">
+        <activity android:name=".activities.MapsActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".activities.FriendListActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".activities.CardViewListActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".activities.ArcPathActivity"
+            android:launchMode="singleTop"/>
+        <activity android:name=".activities.SearchActivity"
+            android:launchMode="singleTop">
             <intent-filter>
             <action android:name="android.intent.action.SEARCH" />
         </intent-filter>

@@ -15,9 +15,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-        import android.os.Bundle;
+import android.content.Intent;
+import android.os.Bundle;
         import android.support.v4.app.ListFragment;
-        import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,10 +36,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.globals.Globals;
-import pmielnic.com.itracker.model.NamedLocation;
 import pmielnic.com.itracker.model.User;
 import pmielnic.com.itracker.utilities.Utils;
 
@@ -53,8 +51,6 @@ public class CardViewListActivity extends BaseActivity {
 
     private ProgressDialog mProgressDialog;
 
-    private String email;
-
     private RequestQueue queue;
 
     Globals globals;
@@ -67,13 +63,6 @@ public class CardViewListActivity extends BaseActivity {
         View contentView = inflater.inflate(R.layout.cardview_list, null, false);
         mDrawerLayout.addView(contentView, 0);
 
-//        setContentView(R.layout.cardview_list);
-
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null){
-            email = bundle.getString("email");
-        }
-
         globals = ((Globals)getApplicationContext());
 
         queue = Volley.newRequestQueue(this);
@@ -82,7 +71,7 @@ public class CardViewListActivity extends BaseActivity {
     }
 
     private void listFriends(){
-        String url = globals.getUrlListFriends() + email;
+        String url = globals.getUrlListFriends() + userEmail;
         showProgressDialog();
         JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
@@ -172,7 +161,9 @@ public class CardViewListActivity extends BaseActivity {
                     @Override
                     public void onClick(View v) {
                         User user = getItem(position);
-                        Toast.makeText(getApplicationContext(), user.toString(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(CardViewListActivity.this, MapsActivity.class);
+                        intent.putExtra("location_parcel", user.getLocation());
+                        startActivity(intent);
                     }
                 });
                 // Set holder as tag for row for more efficient access.
@@ -195,7 +186,7 @@ public class CardViewListActivity extends BaseActivity {
 
 
             // Ensure the map has been initialised by the on map ready callback in ViewHolder.
-            // If it is not ready yet, it will be initialised with the NamedLocation set as its tag
+            // If it is not ready yet, it will be initialised with the User set as its tag
             // when the callback is received.
             if (holder.map != null) {
                 // The map is already ready to be used
@@ -262,16 +253,4 @@ public class CardViewListActivity extends BaseActivity {
 
         }
     };
-
-
-
-    /**
-     * A list of locations to show in this ListView.
-     */
-    private static final NamedLocation[] LIST_LOCATIONS = new NamedLocation[]{
-            new NamedLocation("Kamilek", "Dibuła 9", new LatLng(-33.920455, 18.466941)),
-            new NamedLocation("Paweł", "Wrocławska 42/13", new LatLng(39.937795, 116.387224)),
-            new NamedLocation("Adame", "Krakowska 1", new LatLng(46.948020, 7.448206))
-    };
-
 }

@@ -10,7 +10,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -21,19 +20,12 @@ import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -74,7 +66,6 @@ import java.util.Map;
 
 import java.util.List;
 
-import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.AnimatorUtils;
 import pmielnic.com.itracker.utilities.Utils;
@@ -100,8 +91,6 @@ public class MapsActivity extends BaseActivity
     private RequestQueue queue;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 101;
     private boolean permissionGranted = false;
-    private String userName;
-    private String userEmail;
     private PendingIntent pendingIntent;
     private SupportMapFragment supportMapFragment;
 
@@ -116,7 +105,6 @@ public class MapsActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_maps);
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View contentView = inflater.inflate(R.layout.activity_maps, null, false);
@@ -124,18 +112,10 @@ public class MapsActivity extends BaseActivity
 
         globals = ((Globals)getApplicationContext());
 
-        Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            userName = extras.getString("name");
-            userEmail = extras.getString("email");
-        }
-
         /* Retrieve a PendingIntent that will perform a broadcast */
         Intent alarmIntent = new Intent(MapsActivity.this, AlarmReceiver.class);
-        alarmIntent.putExtra("email", userEmail);
         pendingIntent = PendingIntent.getBroadcast(MapsActivity.this, 0, alarmIntent, 0);
         start();
-
 
         fab = findViewById(R.id.fab);
         menuLayout = findViewById(R.id.menu_layout);
@@ -182,7 +162,6 @@ public class MapsActivity extends BaseActivity
     public void start() {
         AlarmManager am=(AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, AlarmReceiver.class);
-        i.putExtra("email",userEmail);
         final PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         am.cancel(pendingIntent);
         am.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 60 * 10, pi); // Millisec * Second * Minute
@@ -262,6 +241,13 @@ public class MapsActivity extends BaseActivity
 
         setUpMap();
 
+        Intent i = getIntent();
+        if(i.getParcelableExtra("location_parcel") != null){
+            Toast.makeText(getApplicationContext(), "here", Toast.LENGTH_SHORT).show();
+            pmielnic.com.itracker.model.Location locationParcel = i.getParcelableExtra("location_parcel");
+            moveToLocation(locationParcel);
+        }
+
     }
 
     public void setUpMap() {
@@ -294,12 +280,7 @@ public class MapsActivity extends BaseActivity
             double dLongitude = mLastLocation.getLongitude();
             Log.d("COORDS", String.valueOf(dLatitude));
             Log.d("COORDS", String.valueOf(dLongitude));
-//            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
-            Intent i = getIntent();
-            if(i.getParcelableExtra("location_parcel") != null){
-                pmielnic.com.itracker.model.Location locationParcel = i.getParcelableExtra("location_parcel");
-                moveToLocation(locationParcel);
-            }
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(dLatitude, dLongitude), 15));
         }
     }
 

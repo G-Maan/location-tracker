@@ -154,7 +154,13 @@ public class SignInActivity extends AppCompatActivity implements
             GoogleSignInAccount acct = result.getSignInAccount();
             userEmail = acct.getEmail();
             userName = acct.getDisplayName().replaceAll("\\s+","");
-
+            SharedPreferences sharedPreferences = getSharedPreferences("credentials", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("user_email", userEmail);
+            editor.putString("user_name", userName);
+            Log.d("EMAIL", sharedPreferences.getString("user_email", ""));
+            Log.d("USERNAME", sharedPreferences.getString("user_name", ""));
+            editor.commit();
             String url = globals.getUrlSaveUser() + userName + "/" + userEmail;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
                 @Override
@@ -167,10 +173,7 @@ public class SignInActivity extends AppCompatActivity implements
             });
             queue.add(stringRequest);
             mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("email", userEmail);
-            editor.commit();
+
             updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.

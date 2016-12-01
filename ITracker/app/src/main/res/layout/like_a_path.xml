@@ -29,10 +29,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="32dp"
-            app:arc_axisRadius="@dimen/layout_child_offset_large"
+            app:arc_axisRadius="@dimen/layout_child_offset_path"
             app:arc_freeAngle="true"
             app:arc_origin="bottom"
-            app:arc_radius="@dimen/layout_radius_large"
+            app:arc_radius="@dimen/layout_radius_path"
             >
 
             <Button
@@ -80,12 +80,13 @@
         android:layout_height="48dp"
         android:layout_margin="15dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="8dp"
         android:background="@drawable/path_fab"
         android:text="+"
         android:textColor="@color/white"
         android:textSize="24sp"
-        />
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentStart="false"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

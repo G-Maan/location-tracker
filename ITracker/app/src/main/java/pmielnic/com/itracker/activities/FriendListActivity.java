@@ -2,7 +2,6 @@ package pmielnic.com.itracker.activities;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import pmielnic.com.itracker.BaseActivity;
 import pmielnic.com.itracker.R;
 import pmielnic.com.itracker.utilities.Utils;
 import pmielnic.com.itracker.adapters.FoldingCellListAdapter;
@@ -36,7 +34,6 @@ import pmielnic.com.itracker.model.User;
  */
 public class FriendListActivity extends BaseActivity {
 
-    private String userEmail;
     private RequestQueue queue;
     private List<User> userList = new ArrayList<>();
     Globals globals;
@@ -56,10 +53,6 @@ public class FriendListActivity extends BaseActivity {
 
         queue = Volley.newRequestQueue(this);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            userEmail = extras.getString("email");
-        }
 
         // get our list view
         ListView theListView = (ListView) findViewById(R.id.mainListView);
