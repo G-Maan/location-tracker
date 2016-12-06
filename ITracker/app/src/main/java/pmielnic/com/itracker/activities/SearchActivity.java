@@ -1,8 +1,10 @@
 package pmielnic.com.itracker.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
@@ -86,6 +88,12 @@ public class SearchActivity extends BaseActivity {
         listView.setAdapter(listAdapter);
 
         queue = Volley.newRequestQueue(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        setResult(Activity.RESULT_OK, data);
+        finish();
     }
 
     @Override

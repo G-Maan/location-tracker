@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -149,10 +150,8 @@ public class MapsActivity extends BaseActivity
         }
     }
 
-    private void setupArcLayout(){
-        if(arcLayout.getChildCount() > 0){
-            arcLayout.removeAllViews();
-        }
+    private void setupArcLayout(List<User> userList){
+        arcLayout.removeAllViews();
         ArcLayout.LayoutParams params = new ArcLayout.LayoutParams(150, 150);
         for(User u: userList){
             Button b = new AppCompatButton(this);
@@ -173,13 +172,17 @@ public class MapsActivity extends BaseActivity
         if(map != null) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             Log.d("LATLNG", location.getLatitude() + " " + location.getLongitude());
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
             int index = 0;
             for(User u: userList){
-                if(u.getLocation().equals(location)){
+                if(u.getLocation().getLatitude() == location.getLatitude() && u.getLocation().getLongitude() == location.getLongitude()){
                     index = userList.indexOf(u);
                 }
             }
+            if(markers.isEmpty()){
+                markers = new ArrayList<>();
+                markers = globals.getMarkerList();
+            }
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13f));
             markers.get(index).showInfoWindow();
         }
     }
@@ -209,15 +212,15 @@ public class MapsActivity extends BaseActivity
             }else{
                 requestLocationUpdates();
             }
+            if(markers.isEmpty()){
             getMarkerInfo();
+            }
         }
     }
 
-    private void setupMarkers(List<User> users){
+    private List<Marker> setupMarkers(List<User> users){
         if (markers != null){
-            for (Marker m: markers){
-                m.remove();
-            }
+            markers = new ArrayList<>();
         }
         for(User u: users){
             Log.d("LATLNG", u.getName());
@@ -228,6 +231,8 @@ public class MapsActivity extends BaseActivity
 
             markers.add(marker);
         }
+        globals.setMarkerList(markers);
+        return markers;
     }
 
     private List<User> getMarkerInfo(){
@@ -249,8 +254,9 @@ public class MapsActivity extends BaseActivity
                         e.printStackTrace();
                     }
                 }
+                globals.setUserList(userList);
                 setupMarkers(userList);
-                setupArcLayout();
+                setupArcLayout(userList);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -268,13 +274,21 @@ public class MapsActivity extends BaseActivity
         map = retMap;
 
         setUpMap();
+    }
 
-        Intent i = getIntent();
-        if(i.getParcelableExtra("location_parcel") != null){
-            pmielnic.com.itracker.model.Location locationParcel = i.getParcelableExtra("location_parcel");
-            moveToLocation(locationParcel);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                if(data.getParcelableExtra("location_parcel") != null){
+                    pmielnic.com.itracker.model.Location locationParcel = data.getParcelableExtra("location_parcel");
+                    moveToLocation(locationParcel);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
         }
-
     }
 
     public void setUpMap() {

@@ -2,7 +2,13 @@ package pmielnic.com.itracker.globals;
 
 import android.app.Application;
 
+import com.google.android.gms.maps.model.Marker;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import pmielnic.com.itracker.R;
+import pmielnic.com.itracker.model.User;
 
 /**
  * Created by Pawel on 2016-11-21.
@@ -16,6 +22,8 @@ public class Globals extends Application {
     private String urlRemoveUser;
     private String urlListFriends;
     private String urlSaveUser;
+    private List<Marker> markerList = new ArrayList<>();
+    private List<User> userList = new ArrayList<>();
 
     public void setUrlPrint(String urlPrint) {
         this.urlPrint = urlPrint;
@@ -71,5 +79,23 @@ public class Globals extends Application {
 
     public String getUrlSaveUser() {
         return urlSaveUser;
+    }
+
+    public List<Marker> getMarkerList() {
+        return markerList;
+    }
+
+    public void setMarkerList(List<Marker> markerList) {
+        this.markerList = new ArrayList<>();
+        this.markerList = markerList;
+    }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = new ArrayList<>();
+        this.userList = userList;
     }
 }

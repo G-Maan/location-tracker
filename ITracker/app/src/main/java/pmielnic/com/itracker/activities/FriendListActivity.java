@@ -1,6 +1,8 @@
 package pmielnic.com.itracker.activities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,6 +95,12 @@ public class FriendListActivity extends BaseActivity {
             }
         });
         listFriends();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        setResult(Activity.RESULT_OK, data);
+        finish();
     }
 
     private void listFriends(){

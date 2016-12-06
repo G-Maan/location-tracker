@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
         import com.google.android.gms.maps.model.LatLng;
         import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -71,24 +72,25 @@ public class CardViewListActivity extends BaseActivity {
     }
 
     private void listFriends(){
-        String url = globals.getUrlListFriends() + userEmail;
-        showProgressDialog();
-        JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                Log.d("Response", response.toString());
-                for(int i = 0; i < response.length(); i++) {
-                    try{
-                        JSONObject obj = response.getJSONObject(i);
-
-                        User user = Utils.parseJsonToUser(obj);
-
-                        userList.add(user);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+//        String url = globals.getUrlListFriends() + userEmail;
+//        showProgressDialog();
+//        JsonArrayRequest request = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+//            @Override
+//            public void onResponse(JSONArray response) {
+//                Log.d("Response", response.toString());
+//                for(int i = 0; i < response.length(); i++) {
+//                    try{
+//                        JSONObject obj = response.getJSONObject(i);
+//
+//                        User user = Utils.parseJsonToUser(obj);
+//
+//                        userList.add(user);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 // Set a custom list adapter for a list of locations
+                userList = globals.getUserList();
                 mAdapter = new MapAdapter(CardViewListActivity.this, userList);
                 mList = (ListFragment) getSupportFragmentManager().findFragmentById(R.id.list);
                 mList.setListAdapter(mAdapter);
@@ -97,15 +99,15 @@ public class CardViewListActivity extends BaseActivity {
                 AbsListView lv = mList.getListView();
                 lv.setRecyclerListener(mRecycleListener);
 
-                hideProgressDialog();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error", error.getMessage());
-            }
-        });
-        queue.add(request);
+//                hideProgressDialog();
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Log.d("Error", error.getMessage());
+//            }
+//        });
+//        queue.add(request);
     }
 
     private void showProgressDialog() {
@@ -162,8 +164,11 @@ public class CardViewListActivity extends BaseActivity {
                     public void onClick(View v) {
                         User user = getItem(position);
                         Intent intent = new Intent(CardViewListActivity.this, MapsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+                        setResult(Activity.RESULT_OK, intent);
                         intent.putExtra("location_parcel", user.getLocation());
-                        startActivity(intent);
+//                        startActivity(intent);
+                        finish();
                     }
                 });
                 // Set holder as tag for row for more efficient access.

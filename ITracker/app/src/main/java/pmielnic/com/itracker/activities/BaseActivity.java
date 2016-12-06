@@ -83,17 +83,18 @@ public class BaseActivity extends AppCompatActivity{ //changed from depricated A
             case 1:
                 intent = new Intent(this, SearchActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
             case 2:
                 intent = new Intent(this, FriendListActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
                 break;
             case 3:
                 intent = new Intent(this, CardViewListActivity.class);
                 mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, 1);
                 break;
             default:
         }
