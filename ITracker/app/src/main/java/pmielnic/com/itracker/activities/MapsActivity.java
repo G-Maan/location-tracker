@@ -150,8 +150,10 @@ public class MapsActivity extends BaseActivity
     }
 
     private void setupArcLayout(){
-
-        ArcLayout.LayoutParams params = new ArcLayout.LayoutParams(130, 130);
+        if(arcLayout.getChildCount() > 0){
+            arcLayout.removeAllViews();
+        }
+        ArcLayout.LayoutParams params = new ArcLayout.LayoutParams(150, 150);
         for(User u: userList){
             Button b = new AppCompatButton(this);
             b.setText(u.getName().substring(0,1));

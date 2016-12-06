@@ -52,9 +52,8 @@
     <string-array name="nav_drawer_items">
         <item>Map</item>
         <item>Find users</item>
-        <item>Friend list</item>
+        <item>Friend list OLD</item>
         <item>Friend list NEW</item>
-        <item>Arc layout TEST</item>
     </string-array>
     <array name="nav_drawer_icons">
         <item>@drawable/ic_add_black_24dp</item>

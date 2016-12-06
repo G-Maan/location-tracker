@@ -45,8 +45,6 @@
             android:launchMode="singleTop"/>
         <activity android:name=".activities.CardViewListActivity"
             android:launchMode="singleTop"/>
-        <activity android:name=".activities.ArcPathActivity"
-            android:launchMode="singleTop"/>
         <activity android:name=".activities.SearchActivity"
             android:launchMode="singleTop">
             <intent-filter>

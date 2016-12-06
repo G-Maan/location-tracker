@@ -95,11 +95,6 @@ public class BaseActivity extends AppCompatActivity{ //changed from depricated A
                 mDrawerLayout.closeDrawer(mDrawerList);
                 startActivity(intent);
                 break;
-            case 4:
-                intent = new Intent(this, ArcPathActivity.class);
-                mDrawerLayout.closeDrawer(mDrawerList);
-                startActivity(intent);
-                break;
             default:
         }
     }
